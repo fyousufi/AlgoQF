@@ -1,0 +1,2 @@
+# AlgoQF
+trading algorithms
