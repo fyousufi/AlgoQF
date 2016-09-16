@@ -12,7 +12,7 @@ def reply_handler(msg):
     "Handler of server reply"
     print "server Response: %s, %s" % (msg.typeName, msg)
 
-def create_contract(symbol, sec_type, exch, prim_exch, cur):
+def create_contract(symbol, sec_type, exch, prim_exch, curr):
     "Create object that will be a contract and exchange and currency"
     "symbol is the ticker symbol of security"
     "sec type security type of contract"
