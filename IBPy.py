@@ -24,7 +24,7 @@ def create_contract(symbol, sec_type, exch, prim_exch, cur):
     contract.m_secType = sec_type
     contract.m_exchange = exch
     contract.m_primaryExch = prim_exch
-    contract.m_currency = currency
+    contract.m_currency = curr
 
     return contract
 
