@@ -42,10 +42,10 @@ class BuyAndHoldStrategy(Strategy):
                         # (Symbol, Datetime, Type = LONG, SHORT, EXIT)
                         signal = SignalEvent(bars[0][0], bars[0][1], 'LONG')
                         self.events.put(signal)
-                        time.sleep(0.1)
+                        time.sleep(0.01)
                         self.bought[s] = True
                     else:
                         signal = SignalEvent(bars[0][0], bars[0][1], 'EXIT')
                         self.events.put(signal)
-                        time.sleep(0.1)
+                        time.sleep(0.01)
                         self.bought[s] = False

@@ -22,4 +22,4 @@ class SimulatedExecutionHandler(ExecutionHandler):
             fill_event = FillEvent(datetime.datetime.utcnow(), event.symbol,
                                     'ARCA', event.quantity, event.direction, 1.0)
             self.events.put(fill_event)
-            time.sleep(0.1)
+            time.sleep(0.01)

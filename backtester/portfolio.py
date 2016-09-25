@@ -136,7 +136,7 @@ class NaivePortfolio(Portfolio):
         if event.type == 'SIGNAL':
             order_event = self.generate_naive_order(event)
             self.events.put(order_event)
-            time.sleep(0.1)
+            time.sleep(0.01)
 
     def create_equity_curve_dataframe(self):
         curve = pd.DataFrame(self.all_holdings)

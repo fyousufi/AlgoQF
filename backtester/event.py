@@ -68,5 +68,5 @@ class FillEvent(Event):
             full_cost = max(1.3, 0.013 * self.quantity)
         else:
             full_cost = max(1.3, 0.008 * self.quantity)
-        full_cost = min(full_cost, 0.5 / 100.0 * self.quantity * self.fill_cost)
+        full_cost = min(full_cost, 1.0 / 100.0 * self.quantity * self.fill_cost)
         return full_cost

@@ -42,8 +42,7 @@ def simulate():
                     elif event.type == 'FILL':
                         port.update_fill(event)
 
-    print port.output_summary_stats()
-    print port.current_holdings
-    print port.current_positions
+    #print port.output_summary_stats()
+    print port.all_holdings[-1]
 if __name__ == '__main__':
     simulate()

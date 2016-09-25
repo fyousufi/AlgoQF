@@ -42,6 +42,7 @@ class HistoricCSVDataHandler(DataHandler):
                         header = 0, index_col = 0,
                         names = ['datetime', 'open', 'low', 'high', 'close', 'volume', 'oi']
                         ).iloc[::-1]
+
             if comb_index is None:
                 comb_index = self.symbol_data[s].index
             else:
@@ -75,5 +76,5 @@ class HistoricCSVDataHandler(DataHandler):
                 if bar is not None:
                     self.latest_symbol_data[s].append(bar)
         self.events.put(MarketEvent())
-        time.sleep(0.1)
+        time.sleep(0.01)
         #print self.events.empty()
