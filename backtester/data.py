@@ -1,6 +1,7 @@
 import datetime
 import os, os.path
 import pandas as pd
+import time
 
 from abc import ABCMeta, abstractmethod
 
@@ -32,7 +33,7 @@ class HistoricCSVDataHandler(DataHandler):
 
         self._open_convert_csv_files()
 
-    def _open_convert_csv_files():
+    def _open_convert_csv_files(self):
         """ convert csv files to pandas DataFrames """
         comb_index = None
         for s in self.symbol_list:
@@ -40,8 +41,7 @@ class HistoricCSVDataHandler(DataHandler):
                         os.path.join(self.csv_dir, '%s.csv' % s),
                         header = 0, index_col = 0,
                         names = ['datetime', 'open', 'low', 'high', 'close', 'volume', 'oi']
-                        )
-
+                        ).iloc[::-1]
             if comb_index is None:
                 comb_index = self.symbol_data[s].index
             else:
@@ -54,7 +54,7 @@ class HistoricCSVDataHandler(DataHandler):
 
     def _get_new_bar(self, symbol):
         for b in self.symbol_data[symbol]:
-            yield tuple([symbol, datetime.datetime.strptime(b[0], '%Y-%m-%d %H:%M:%S'),
+            yield tuple([symbol, datetime.datetime.strptime(b[0], '%Y-%m-%d'),# %H:%M:%S'),
                         b[1][0], b[1][1], b[1][2], b[1][3], b[1][4]])
 
     def get_latest_bars(self, symbol, N=1):
@@ -75,3 +75,5 @@ class HistoricCSVDataHandler(DataHandler):
                 if bar is not None:
                     self.latest_symbol_data[s].append(bar)
         self.events.put(MarketEvent())
+        time.sleep(0.1)
+        #print self.events.empty()

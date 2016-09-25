@@ -1,4 +1,5 @@
 import datetime
+import time
 import Queue
 
 from abc import ABCMeta, abstractmethod
@@ -16,8 +17,9 @@ class SimulatedExecutionHandler(ExecutionHandler):
     def __init__(self, events):
         self.events = events
 
-    def execute_order(self, events):
+    def execute_order(self, event):
         if event.type == 'ORDER':
             fill_event = FillEvent(datetime.datetime.utcnow(), event.symbol,
-                                    'ARCA', event.quantity, event.direction, None)
+                                    'ARCA', event.quantity, event.direction, 1.0)
             self.events.put(fill_event)
+            time.sleep(0.1)

@@ -16,7 +16,7 @@ class SignalEvent(Event):
     Handles sending a Signal from a Strategy Object.
     Received by Portfolio object and acted upon.
     """
-    def __init__(self, symbol, datetime, signal_type, strength):
+    def __init__(self, symbol, datetime, signal_type, strength=1):
         self.type = 'SIGNAL'
         self.symbol = symbol # 'GOOG'
         self.datetime = datetime # timestamp of signal

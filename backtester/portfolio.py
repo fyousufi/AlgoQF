@@ -1,12 +1,15 @@
 import datetime
 import numpy as np
+import os, os.path
 import pandas as pd
+import time
 import Queue
 
 from abc import ABCMeta, abstractmethod
 from math import floor
 
 from event import FillEvent, OrderEvent
+from performance import create_sharpe_ratio, create_drawdowns
 
 class Portfolio(object):
     __metaclass__ = ABCMeta
@@ -19,7 +22,7 @@ class Portfolio(object):
     def update_fill(self, event):
         raise NotImplementedError("update_fill() not implemented")
 
-def NaivePortfolio(Portfolio):
+class NaivePortfolio(Portfolio):
     def __init__(self, bars, events, start_date, initial_capital=100000.0):
         self.bars = bars
         self.events = events
@@ -86,7 +89,7 @@ def NaivePortfolio(Portfolio):
         if fill.direction == 'SELL':
             fill_dir = -1
 
-        self.current_positions[fill.symbol] += fill_dir * fill_quantity
+        self.current_positions[fill.symbol] += fill_dir * fill.quantity
 
     def update_holdings_from_fill(self, fill):
         fill_dir = 0
@@ -96,11 +99,11 @@ def NaivePortfolio(Portfolio):
             fill_dir = -1
 
         fill_cost = self.bars.get_latest_bars(fill.symbol)[0][5] # close price
-        cost = fill_dir * fill_cost * fill_quantity
+        cost = fill_dir * fill_cost * fill.quantity
         self.current_holdings[fill.symbol] += cost
         self.current_holdings['commission'] += fill.commission
         self.current_holdings['cash'] -= (cost + fill.commission)
-        self.current_holdings['total'] -= (cost = fill.commission)
+        self.current_holdings['total'] -= (cost + fill.commission)
 
     def update_fill(self, event):
         if event.type == 'FILL':
@@ -133,6 +136,7 @@ def NaivePortfolio(Portfolio):
         if event.type == 'SIGNAL':
             order_event = self.generate_naive_order(event)
             self.events.put(order_event)
+            time.sleep(0.1)
 
     def create_equity_curve_dataframe(self):
         curve = pd.DataFrame(self.all_holdings)
@@ -140,3 +144,18 @@ def NaivePortfolio(Portfolio):
         curve['returns'] = curve['total'].pct_change()
         curve['equity_curve'] = (1.0 + curve['returns']).cumprod()
         self.equity_curve = curve
+
+    def output_summary_stats(self):
+        self.create_equity_curve_dataframe()
+        total_return = self.equity_curve['equity_curve'][-1]
+        returns = self.equity_curve['returns']
+        pnl = self.equity_curve['equity_curve']
+
+        sharpe_ratio = create_sharpe_ratio(returns)
+        max_dd, dd_duration = create_drawdowns(pnl)
+
+        stats = [("Total Return", "%0.2f%%" % ((total_return - 1.0) * 100.0)),
+                 ("Sharpe Ratio", "%0.2f" % sharpe_ratio),
+                 ("Max Drawdown", "%0.2f%%" % (max_dd * 100.0)),
+                 ("Drawdown Duration", "%d" % dd_duration)]
+        return stats
