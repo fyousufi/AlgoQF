@@ -80,10 +80,10 @@ class SimpleTrendsStrategy(Strategy):
                             self.events.put(signal)
                             time.sleep(0.01)
                             self.bought[s] = False
-                            prev = cur
+                            prev_bars[s][5] = curr
                         elif percent_change < sell_loss_thresh:
                             signal = SignalEvent(bars[0][0], bars[0][1], 'EXIT')
-                            prev = curr
+                            prev_bars[s][5] = curr
                             self.bought[s] = False
                         else:
                             pass
@@ -92,7 +92,7 @@ class SimpleTrendsStrategy(Strategy):
                             signal = SignalEvent(bars[0][0], bars[0][1], 'LONG')
                             self.events.put(signal)
                             time.sleep(0.01)
-                            prev = curr
+                            prev_bars[s][5] = curr
                             self.bought[s] = True
                         else:
                             pass
