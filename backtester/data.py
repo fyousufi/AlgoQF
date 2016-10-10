@@ -65,6 +65,14 @@ class HistoricCSVDataHandler(DataHandler):
             print "That symbol is not available in the historical data set"
         else:
             return bars_list[-N:]
+## Returns the first element of the list of bars simply to inititalize
+    def get_first_bar(self, symbol, N=0):
+        try:
+            bars_list = self.latest_symbol_data[symbol]
+            except KeyError:
+                print "That symbol is not available in the historical data set"
+            else:
+                return bars_list[N]
 
     def update_bars(self):
         for s in self.symbol_list:

@@ -26,6 +26,21 @@ class SimpleTrendsStrategy(Strategy):
 
         self.bought = self._calculate_initial_bought()
 
+        g_sell_gain_thresh = 0
+        g_sell_loss_thresh = 0
+        g_buy_thresh = 0
+        g_buy_again_thresh = 0
+        g_incr = 0
+
+        ##Take the current bar that met accepted value initially zero
+        prev = -1 ##set to negative one if it has never been initialized
+
+        ##Store the prev in a data structure in order to compare
+        ##amongst various grouping of stocks and retain datastructure
+
+        prev_bars = {'s':[]}
+
+
     def _calculate_initial_bought(self):
         bought = {}
         for s in self.symbol_list:
@@ -36,18 +51,51 @@ class SimpleTrendsStrategy(Strategy):
         if event.type == 'MARKET':
             for s in self.symbol_list:
                 bars = self.bars.get_latest_bars(s, N=1)
+
+            ## if prev is initial then obtain the first value
+                if(prev_bars[s] == None):
+                    prev_bars[s] = self.get_first_bar(s, N=0)
+                    prev = prev_bars[s][5]
+                elif:
+                    prev = prev_bars[s][5]
+                ##current
+
+                curr = bars[1][3]
+
+                ##delta value
+
+                delta = curr- prev
+
+                ## per change
+
+                percent_change = delta/ prev
+
+
+
                 if bars is not None and bars != []:
-                    if self.bought[s] == False:
+                    if self.bought[s] == True:
                         # (Symbol, Datetime, Type = LONG, SHORT, EXIT)
-                        signal = SignalEvent(bars[0][0], bars[0][1], 'LONG')
-                        self.events.put(signal)
-                        time.sleep(0.01)
-                        self.bought[s] = True
+                        if percent_change > sell_gain_thresh:
+                            signal = SignalEvent(bars[0][0], bars[0][1], 'EXIT')
+                            self.events.put(signal)
+                            time.sleep(0.01)
+                            self.bought[s] = False
+                            prev = cur
+                        elif percent_change < sell_loss_thresh:
+                            signal = SignalEvent(bars[0][0], bars[0][1], 'EXIT')
+                            prev = curr
+                            self.bought[s] = False
+                        else:
+                            pass
                     else:
-                        signal = SignalEvent(bars[0][0], bars[0][1], 'EXIT')
-                        self.events.put(signal)
-                        time.sleep(0.01)
-                        self.bought[s] = False
+                        if percent_change < buy_thresh or percent_change > buy_again_thresh:
+                            signal = SignalEvent(bars[0][0], bars[0][1], 'LONG')
+                            self.events.put(signal)
+                            time.sleep(0.01)
+                            prev = curr
+                            self.bought[s] = True
+                        else:
+                            pass
 
 
 class BuyAndHoldStrategy(Strategy):

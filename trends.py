@@ -5,13 +5,13 @@ import itertools
 from numpy import arange
 
 def main():
-    #yahoo_url = "http://chart.finance.yahoo.com/table.csv?"
-    #params = "s=FB"
+    yahoo_url = "http://chart.finance.yahoo.com/table.csv?"
+    params = "s=FB"
     yahoo_url = "http://chart.finance.yahoo.com/table.csv?s=ORC.BE&a=0&b=1&c=2012&d=11&e=31&f=2012&g=d"
     data = requests.get(yahoo_url).content
-
+    print "running"
     data_lines = data.splitlines()
-    #incr = 5
+    incr = 5
     header = data_lines.pop(0)
     data_lines = list(reversed(data_lines))
 
@@ -31,38 +31,38 @@ def main():
         num_shares = 53
         port_val = prev * num_shares
         initial_val = port_val
-        #print first['Date'], prev
+        ##print first['Date'], prev
         for row in cr:
-            #print '\n', row['Date'], row['Adj Close']
+            ##print '\n', row['Date'], row['Adj Close']
             curr = float(row['Adj Close'])
             delta = curr - prev
             percent_change = delta / prev
             if own:
                 if percent_change > sell_gain_thresh:
-                    #print "SELL, you have gained %f" % (percent_change)
+                    print "SELL, you have gained %f" % (percent_change)
                     prev = curr
                     own = False
                     port_val = curr * num_shares
                     num_shares = 0
                 elif percent_change < sell_loss_thresh:
-                    #print "SELL, you have lost %f" % (percent_change)
+                    print "SELL, you have lost %f" % (percent_change)
                     prev = curr
                     own = False
                     port_val = curr * num_shares
                     num_shares = 0
                 else:
                     pass
-                    #print "KEEP, not enough change this week ", percent_change
+                    ##print "KEEP, not enough change this week ", percent_change
             else:
                 if percent_change < buy_thresh or percent_change > buy_again_thresh:
-                    #print "buy, stock is down/up by ", percent_change
+                    print "buy, stock is down/up by ", percent_change
                     prev = curr
                     own = True
                     num_shares = port_val / curr
                     port_val = curr * num_shares
                 else:
                     pass
-                    #print "DON'T BUY, not enough change this week ", percent_change
+                    ##print "DON'T BUY, not enough change this week ", percent_change
         if port_val > max_port:
             max_port = port_val
             g_incr = incr
