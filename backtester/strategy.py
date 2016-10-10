@@ -60,7 +60,7 @@ class SimpleTrendsStrategy(Strategy):
                     prev = prev_bars[s][5]
                 ##current
 
-                curr = bars[1][3]
+                curr = bars[0][5]
 
                 ##delta value
 
