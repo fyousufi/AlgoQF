@@ -39,7 +39,7 @@ class HistoricCSVDataHandler(DataHandler):
         for s in self.symbol_list:
             self.symbol_data[s] = pd.io.parsers.read_csv(
                         os.path.join(self.csv_dir, '%s.csv' % s),
-                        header = 0, index_col = 0,
+                        header = 0, index_col = 0, usecols=[0,1,3,2,4,5,11],
                         names = ['datetime', 'open', 'low', 'high', 'close', 'volume', 'oi']
                         ).iloc[::-1]
 
@@ -58,6 +58,7 @@ class HistoricCSVDataHandler(DataHandler):
             yield tuple([symbol, datetime.datetime.strptime(b[0], '%Y-%m-%d'),# %H:%M:%S'),
                         b[1][0], b[1][1], b[1][2], b[1][3], b[1][4]])
 
+##Returns the most upto date bar in the dataset meaning the last line as the data comes in from new to old
     def get_latest_bars(self, symbol, N=1):
         try:
             bars_list = self.latest_symbol_data[symbol]
@@ -65,15 +66,17 @@ class HistoricCSVDataHandler(DataHandler):
             print "That symbol is not available in the historical data set"
         else:
             return bars_list[-N:]
-## Returns the first element of the list of bars simply to inititalize
+## Returns the first element of the list of bars simply to inititalize meaning the newest data
     def get_first_bar(self, symbol, N=0):
         try:
             bars_list = self.latest_symbol_data[symbol]
-            except KeyError:
-                print "That symbol is not available in the historical data set"
-            else:
+        except KeyError, name:
+                print ("That symbol is not available in the historical data set",name)
+        else:
                 return bars_list[N]
 
+##Either update with a loop condition that loops through with the increment or
+##Utilize a different indexing methods into Pandas data frame that iterrows which simply iterates into the frames  
     def update_bars(self):
         for s in self.symbol_list:
             try:
