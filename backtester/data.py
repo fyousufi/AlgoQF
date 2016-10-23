@@ -40,7 +40,7 @@ class HistoricCSVDataHandler(DataHandler):
             self.symbol_data[s] = pd.io.parsers.read_csv(
                         os.path.join(self.csv_dir, '%s.csv' % s),
                         header = 0, index_col = 0, usecols=[0,1,3,2,4,5,11],
-                        names = ['datetime', 'open', 'low', 'high', 'close', 'volume', 'oi']
+                        names = ['datetime', 'open', 'low', 'high', 'close', 'volume', 'Adj. Close']
                         ).iloc[::-1]
 
             if comb_index is None:
@@ -49,10 +49,16 @@ class HistoricCSVDataHandler(DataHandler):
                 comb_index.union(self.symbol_data[s].index)
 
             self.latest_symbol_data[s] = []
+        ##Uncomment BELOW "for block" if you want the same date ticks to compare all symbols meaning if FB.csv has a bar from January 1, 2014, then all symbols GOOGL, AMZN etc will
+        ##also be compared from this date, even if they don't have data on the exchange, they will be padded with 'na' values. This most likely doesn't make sense
+        ## for our purposes so this will be commented out, unless some minute by minute strategy requires this tick by tick comparison in the future
 
-        for s in self.symbol_list:
-            self.symbol_data[s] = self.symbol_data[s].reindex(index=comb_index, method='pad').iterrows()
+        ##PADDING BELOW FOR UNIFORM TICK BY TICK COMPARISON (ALL SYMBOLS GET THE SAME DATE/TIME tick for comparision from time t )
 
+        # for s in self.symbol_list:
+        #     self.symbol_data[s] = self.symbol_data[s].reindex(index=comb_index, method='pad').iterrows()
+
+## This is essentially what loops through your code, but since the csv files yields a tuple, we have to move through it with yield, one by one in the dataframe
     def _get_new_bar(self, symbol):
         for b in self.symbol_data[symbol]:
             yield tuple([symbol, datetime.datetime.strptime(b[0], '%Y-%m-%d'),# %H:%M:%S'),
@@ -73,10 +79,10 @@ class HistoricCSVDataHandler(DataHandler):
         except KeyError, name:
                 print ("That symbol is not available in the historical data set",name)
         else:
-                return bars_list[N]
+                return bars_list[N:N+1]
 
 ##Either update with a loop condition that loops through with the increment or
-##Utilize a different indexing methods into Pandas data frame that iterrows which simply iterates into the frames  
+##Utilize a different indexing methods into Pandas data frame that iterrows which simply iterates into the frames
     def update_bars(self):
         for s in self.symbol_list:
             try:

@@ -30,15 +30,16 @@ def simulate():
     symbol_list=['FB', 'AAPL','GOOG']
 
     ##list of thresholds to be set initially for each stock/futures symbols and passed in to the strategy class
-    # self.g_sell_gain_thresh = 0
-    # self.g_sell_loss_thresh = 0
-    # self.g_buy_thresh = 0
-    # self.g_buy_again_thresh = 0
+    ##May need to think through whether these can work better with Order types of LMT, Trailing Orders etc for better execution
+    # g_sell_gain_thresh = 0
+    # g_sell_loss_thresh = 0
+    # g_buy_thresh = 0
+    # g_buy_again_thresh = 0
     # g_incr is the
     global_thresholds = {'g_sell_gain_thresh':0,'g_sell_loss_thresh':0,'g_buy_thresh':0,'g_buy_again_thresh':0,'g_incr':0}
-    symbol_thresholds={}
+
     for s in symbol_list:
-        symbol_thresholds[s] = global_thresholds
+        global_symbol_thresholds[s] = global_thresholds
 
 
     ##Futures_list --would have to update code or use the current symbol_list variable modified for Futures
@@ -63,7 +64,7 @@ def simulate():
             cmd = "curl "  + quandl_url + s + "/data.csv\'" + "> \'" + ab_path + '/' + s + ".csv\'"
             os.system(cmd)
 
-    print symbol_thresholds
+    print global_symbol_thresholds
 
     bars = HistoricCSVDataHandler(events, ab_path + '/', symbol_list)
     ##strategy = BuyAndHoldStrategy(bars, events)
@@ -104,5 +105,8 @@ def simulate():
     print port.all_holdings[-1]
     ##The below means we will only run this directly if backtester.py is called on its own (python will set this as main), else if our
     ##entire program backtester/. is a component in a larger program, we will have to execute backtester.simulate() within that program
+
+##Name or store globals like the thresholds values here for further testing and refined this value can be called anywhere
+global_symbol_thresholds={}
 if __name__ == '__main__':
     simulate()
