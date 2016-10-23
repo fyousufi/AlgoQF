@@ -26,6 +26,7 @@ class SimpleTrendsStrategy(Strategy):
 
         self.bought = self._calculate_initial_bought()
 
+        ##These are the values we will set in symbol_thresholds
         self.g_sell_gain_thresh = 0
         self.g_sell_loss_thresh = 0
         self.g_buy_thresh = 0

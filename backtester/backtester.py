@@ -26,7 +26,24 @@ def simulate():
     directory = '/twoterradata'
     ab_path = os.path.abspath(directory)
     ##Below symbol list for stocks
+    ##Could be modified for Futures
     symbol_list=['FB', 'AAPL','GOOG']
+
+    ##list of thresholds to be set initially for each stock/futures symbols and passed in to the strategy class
+    # self.g_sell_gain_thresh = 0
+    # self.g_sell_loss_thresh = 0
+    # self.g_buy_thresh = 0
+    # self.g_buy_again_thresh = 0
+    # g_incr is the
+    global_thresholds = {'g_sell_gain_thresh':0,'g_sell_loss_thresh':0,'g_buy_thresh':0,'g_buy_again_thresh':0,'g_incr':0}
+    symbol_thresholds={}
+    for s in symbol_list:
+        symbol_thresholds[s] = global_thresholds
+
+
+    ##Futures_list --would have to update code or use the current symbol_list variable modified for Futures
+
+    ##Define these global thresholds for each value in the symbol
 
     ##Ensures person executes this tester on a Linux or Mac or uses a VM
     if platform.system() not in ['Linux', 'Darwin']:
@@ -34,7 +51,7 @@ def simulate():
         quit()
 
     ##ensure you are logged into session at quandl or set the api key, but for WIKI dataset not necessary
-    ##Below URL will be modifed to obtain futures dataset
+    ##Below URL will be modifed to obtain futures dataset and most likely will be modified with database queries
     quandl_url = "\'https://www.quandl.com/api/v3/datasets/WIKI/"
     for s in symbol_list:
         if os.path.exists(ab_path+'/'+s+'.csv'):
@@ -46,12 +63,13 @@ def simulate():
             cmd = "curl "  + quandl_url + s + "/data.csv\'" + "> \'" + ab_path + '/' + s + ".csv\'"
             os.system(cmd)
 
+    print symbol_thresholds
 
     bars = HistoricCSVDataHandler(events, ab_path + '/', symbol_list)
     ##strategy = BuyAndHoldStrategy(bars, events)
     ##strategy for simple trends, this variable must be set as a list to test multiple strategies etc.
 
-
+    ## Set strategy by modifying here
     strategy= SimpleTrendsStrategy(bars,events)
     port = NaivePortfolio(bars, events, "2015-11-18")
     broker = SimulatedExecutionHandler(events)
@@ -84,5 +102,7 @@ def simulate():
 
     print port.output_summary_stats()
     print port.all_holdings[-1]
+    ##The below means we will only run this directly if backtester.py is called on its own (python will set this as main), else if our
+    ##entire program backtester/. is a component in a larger program, we will have to execute backtester.simulate() within that program
 if __name__ == '__main__':
     simulate()
