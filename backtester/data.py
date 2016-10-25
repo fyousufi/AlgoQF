@@ -62,7 +62,7 @@ class HistoricCSVDataHandler(DataHandler):
 ## This is essentially what loops through your code, but since the csv files yields a tuple, we have to move through it with yield, one by one in the dataframe
     def _get_new_bar(self, symbol):
         for b in self.symbol_data[symbol]:
-            print self.symbol_data['FB']
+            ##print self.symbol_data['FB']
             # if type(b[0]) != 'datetime.date':
             #     next(self.symbol_data[symbol])
             if self.initial_bar_counter == 0:
