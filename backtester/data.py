@@ -32,6 +32,7 @@ class HistoricCSVDataHandler(DataHandler):
         self.continue_backtest = True
 
         self._open_convert_csv_files()
+        self.initial_bar_counter = 0
 
     def _open_convert_csv_files(self):
         """ convert csv files to pandas DataFrames """
@@ -40,7 +41,7 @@ class HistoricCSVDataHandler(DataHandler):
             self.symbol_data[s] = pd.io.parsers.read_csv(
                         os.path.join(self.csv_dir, '%s.csv' % s),
                         header = 0, index_col = 0, usecols=[0,1,3,2,4,5,11],
-                        names = ['datetime', 'open', 'low', 'high', 'close', 'volume', 'Adj. Close']
+                        names = ['datetime', 'open', 'high', 'low', 'close', 'volume', 'Adj. Close']
                         ).iloc[::-1]
 
             if comb_index is None:
@@ -61,7 +62,16 @@ class HistoricCSVDataHandler(DataHandler):
 ## This is essentially what loops through your code, but since the csv files yields a tuple, we have to move through it with yield, one by one in the dataframe
     def _get_new_bar(self, symbol):
         for b in self.symbol_data[symbol]:
-            yield tuple([symbol, datetime.datetime.strptime(b[0], '%Y-%m-%d'),# %H:%M:%S'),
+            print self.symbol_data['FB']
+            # if type(b[0]) != 'datetime.date':
+            #     next(self.symbol_data[symbol])
+            if self.initial_bar_counter == 0:
+                place_dt = datetime.date.today().isoformat()
+                yield tuple([symbol, datetime.datetime.strptime(place_dt, '%Y-%m-%d').date(),# %H:%M:%S'),
+                        '0', '0', '0', '0', '0'])
+                self.initial_bar_counter = self.initial_bar_counter + 1
+            else:
+                yield tuple([symbol, datetime.datetime.strptime(b[0], '%Y-%m-%d').date(),# %H:%M:%S'),
                         b[1][0], b[1][1], b[1][2], b[1][3], b[1][4]])
 
 ##Returns the most upto date bar in the dataset meaning the last line as the data comes in from new to old
