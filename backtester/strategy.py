@@ -52,13 +52,24 @@ class SimpleTrendsStrategy(Strategy):
         if event.type == 'MARKET':
             for s in self.symbol_list:
                 bars = self.bars.get_latest_bars(s, N=1)
+                print bars[0]
 
             ## if prev is initial then obtain the first value
-                if(s not in self.prev_bars):
-                    self.prev_bars[s] = self.bars.get_first_bar(s, N=0)
-                    prev = self.prev_bars[s][5]
+                if s not in self.prev_bars:
+                    ##may need to do this only if the calculation for zero gives issues
+                    self.prev_bars[s] = self.bars.update_bars()
+                    ##self.prev_bars[s] = self.bars.get_first_bar(s, N=0)
+                    ##print self.prev_bars[s]
+
+
+                    ##converting from tuple from original data etc means lets set prev initially to zero as the closing value
+                    prev = 0
                 else:
-                    prev = self.prev_bars[s][5]
+                    self.prev_bars[s] = self.bars.update_bars()
+                    print (self.prev_bars[s])
+                    if(self.prev_bars[s] is not None):
+                        prev = self.prev_bars[s][5]
+                    prev = 0
                 ##current
 
                 curr = bars[0][5]
@@ -69,7 +80,10 @@ class SimpleTrendsStrategy(Strategy):
 
                 ## per change
 
-                percent_change = delta/ prev
+                if prev == 0:
+                    percent_change = 0
+                else:
+                    percent_change = delta / prev
 
 
 
