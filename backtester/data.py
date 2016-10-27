@@ -32,7 +32,7 @@ class HistoricCSVDataHandler(DataHandler):
         self.continue_backtest = True
 
         self._open_convert_csv_files()
-        self.initial_bar_counter = 0
+        
 
     def _open_convert_csv_files(self):
         """ convert csv files to pandas DataFrames """
